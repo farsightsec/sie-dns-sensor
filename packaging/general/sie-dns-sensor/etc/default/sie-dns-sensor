@@ -8,9 +8,7 @@ maxper="16"
 
 channel="ch202"
 interface="eth0"
-dnstype="cache"
-bpfpat_src="src host 192.0.2.1"
-bpfpat_dst="dst host 192.0.2.1"
+DNSQR_RES_ADDRS="192.0.2.1, 2001:db8::1"
 
 syslog_priority="local5.info"
 max_spool_size_kbytes="524288"
