@@ -4,9 +4,6 @@ newdir="$spooldir/new"
 archivedir="$spooldir/archive"
 knownhosts="/var/spool/sie/keys/known_hosts"
 
-bpfpat_cache="((@SRC@) and udp dst port 53) or ((@DST@) and udp src port 53) or ((@SRC@) and icmp)"
-bpfpat_auth="((@DST@) and udp dst port 53) or ((@SRC@) and udp src port 53) or ((@DST@) and icmp)"
-
 ### optional settings
 
 if [ -z "$rsync" ]; then
@@ -177,36 +174,6 @@ prepare_nmsgtool_environment() {
         exit 1
     fi
 
-    if [ -z "$bpfpat" ]; then
-        if [ -z "$dnstype" ]; then
-            echo "$0: dnstype is unset"
-            exit 1
-        fi
-
-        if [ -z "$bpfpat_src" ]; then
-            echo "$0: bpfpat_src is unset"
-            exit 1
-        fi
-
-        if [ -z "$bpfpat_dst" ]; then
-            echo "$0: bpfpat_dst is unset"
-            exit 1
-        fi
-
-        if [ "$dnstype" = "cache" ]; then
-            bpf="$bpfpat_cache"
-        elif [ "$dnstype" = "auth" ]; then
-            bpf="$bpfpat_auth"
-        else
-            echo "$0: unknown dnstype $dnstype in $conffile"
-            exit 1
-        fi
-
-        bpf=$(echo "$bpf" | sed -e "s,@DST@,$bpfpat_dst,g" -e "s,@SRC@,$bpfpat_src,g")
-    else
-        bpf="$bpfpat"
-    fi
-
     makedir "$newdir/$channel"
 
     if [ -z "$DNSQR_CAPTURE_RD" ]; then
@@ -219,7 +186,6 @@ prepare_nmsgtool_environment() {
         NMSG_USER=""
     fi
 
-    export NMSG_BPF="$bpf"
     export NMSG_KICKER="/usr/lib/sie/sie-kicker $channel"
     export ARGV_NMSGTOOL="$NMSG_USER -D -P $pid -i $interface -V ISC -T dnsqr -z -t 60 -w $newdir/$channel/${outfile_prefix}"
 }
