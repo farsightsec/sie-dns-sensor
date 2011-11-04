@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+if [ "$1" = configure ]; then
+    if ! getent passwd sie-dns-sensor >/dev/null; then
+        adduser --quiet --system --group --no-create-home --home /var/spool/sie sie-dns-sensor
+    fi
+fi
+
+#DEBHELPER#

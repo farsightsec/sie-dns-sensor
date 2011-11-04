@@ -7,7 +7,7 @@ Standards-Version: 3.8.4
 
 Package: sie-dns-sensor
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}, adduser
 Conflicts: nmsgtool
 Description: SIE DNS sensor
  SIE DNS sensor
