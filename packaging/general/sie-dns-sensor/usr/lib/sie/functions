@@ -209,7 +209,10 @@ prepare_nmsgtool_environment() {
 
     makedir "$newdir/$channel"
 
-    export DNSQR_CAPTURE_RD="0"
+    if [ -z "$DNSQR_CAPTURE_RD" ]; then
+        export DNSQR_CAPTURE_RD="0"
+    fi
+
     export NMSG_BPF="$bpf"
     export NMSG_KICKER="/usr/lib/sie/sie-kicker $channel"
     export ARGV_NMSGTOOL="-D -P $pid -i $interface -V ISC -T dnsqr -z -t 60 -w $newdir/$channel/${outfile_prefix}"
