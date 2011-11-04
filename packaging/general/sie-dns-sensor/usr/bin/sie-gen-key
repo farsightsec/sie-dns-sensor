@@ -2,8 +2,9 @@
 
 . /etc/default/sie-dns-sensor
 . /usr/lib/sie/functions
-if ! check_sie_config ; then
-    echo "$0: a required config variable is missing."
+
+if [ -z "$uploadkey" ]; then
+    echo "$0: uploadkey is not set"
     exit 1
 fi
 
