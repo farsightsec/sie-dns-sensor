@@ -1,7 +1,7 @@
 spooldir="/var/spool/sie"
 uploadkey="/var/spool/sie/keys/upload"
 
-login=""
+login="sie-username"
 submitserver="submit.sie.isc.org"
 interval="60"
 maxper="16"
