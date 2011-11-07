@@ -190,10 +190,11 @@ prepare_nmsgtool_environment() {
         export DNSQR_CAPTURE_RD="0"
     fi
 
-    if [ -n "$runuser" ]; then
-        NMSG_USER="-U $runuser"
-    else
-        NMSG_USER=""
+    if getent passwd sie-dns-sensor >/dev/null; then
+        NMSG_USER="-U sie-dns-sensor"
+        if getent group sie-dns-sensor >/dev/null; then
+            chown -R sie-dns-sensor:sie-dns-sensor /var/spool/sie
+        fi
     fi
 
     export NMSG_KICKER="/usr/lib/sie/sie-kicker $channel"
