@@ -41,7 +41,7 @@ start() {
 
     prepare_nmsgtool_environment $PID
     log_daemon_msg "Starting $DESC" "$NAME"
-    if start-stop-daemon --start --quiet --oknodo --pidfile $PID --startas $DAEMON; then
+    if start-stop-daemon --start --quiet --oknodo --pidfile $PID --name $NAME --startas $DAEMON; then
         log_end_msg 0
     else
         log_end_msg 1
@@ -50,7 +50,7 @@ start() {
 
 stop() {
     log_daemon_msg "Stopping $DESC" "$NAME"
-    if start-stop-daemon --stop --quiet --oknodo --pidfile $PID; then
+    if start-stop-daemon --stop --quiet --oknodo --pidfile $PID --name $NAME; then
         log_end_msg 0
     else
         log_end_msg 1
