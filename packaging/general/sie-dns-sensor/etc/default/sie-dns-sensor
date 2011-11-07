@@ -13,5 +13,3 @@ DNSQR_RES_ADDRS="192.0.2.1, 2001:db8::1"
 syslog_priority="local5.info"
 max_spool_size_kbytes="524288"
 memory_ulimit_kbytes="524288"
-
-runuser="sie-dns-sensor"
