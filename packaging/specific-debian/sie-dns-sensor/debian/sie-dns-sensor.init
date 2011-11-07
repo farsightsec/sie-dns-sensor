@@ -52,6 +52,7 @@ stop() {
     log_daemon_msg "Stopping $DESC" "$NAME"
     if start-stop-daemon --stop --quiet --oknodo --pidfile $PID --name $NAME; then
         log_end_msg 0
+        rm -f $PID
     else
         log_end_msg 1
     fi
