@@ -74,7 +74,13 @@ check_uploadkey() {
 
 makedir() {
     if ! [ -d "$1" ]; then
-        mkdir -p "$1"
+        if getent passwd sie-dns-sensor >/dev/null; then
+            if getent group sie-dns-sensor >/dev/null; then
+                install -d -o sie-dns-sensor -g sie-dns-sensor "$1"
+            fi
+        else
+            mkdir -p "$1"
+        fi
     fi
 }
 
