@@ -21,8 +21,7 @@
 . /usr/lib/sie/functions
  
 DESC="SIE DNS sensor"
-LOCK="/var/lock/subsys/sie-dns-sensor"
-PID="/var/run/nmsgtool.pid"
+PIDFILE="/var/run/nmsgtool.pid"
 
 if [ -z "$memory_ulimit_kbytes" ]; then
     memory_ulimit_kbytes="524288"
@@ -32,6 +31,14 @@ ulimit -d $memory_ulimit_kbytes
 ulimit -m $memory_ulimit_kbytes
 ulimit -v $memory_ulimit_kbytes
 
+is_running() {
+    if [ -f $PIDFILE ]; then
+        checkpid $(cat $PIDFILE)
+        return $?
+    fi
+    return 1
+}
+
 start() {
     if ! check_sie_config ; then
         echo -n $"sie-dns-sensor: unable to start."
@@ -40,24 +47,18 @@ start() {
         return 1
     fi
 
-    if [ ! -f $LOCK ]; then
-        prepare_nmsgtool_environment $PID
+    if ! is_running ; then
+        prepare_nmsgtool_environment $PIDFILE
         echo -n $"Starting $DESC: "
         daemon nmsgtool
-        RETVAL=$?
-        [ $RETVAL -eq 0 ] && touch $LOCK
         echo
     fi
-    return $RETVAL
 }
 
 stop() {
     echo -n $"Stopping $DESC: "
     killproc nmsgtool
-    RETVAL=$?
-    [ $RETVAL -eq 0 ] && rm -f $LOCK
     echo
-    return $RETVAL
 }
 
 restart() {
@@ -83,10 +84,10 @@ case "$1" in
         restart
         ;;
     status)
-        status sie-dns-sensor
+        status -p $PIDFILE nmsgtool
         ;;
     condrestart)
-        if [ -f $LOCK ]; then
+        if is_running ; then
             restart
         fi
         ;;
