@@ -37,8 +37,6 @@ fi
 if [ "$1" -ge "1" ]; then
     /sbin/service sie-dns-sensor condrestart >/dev/null 2>&1
 fi
-getent group sie-dns-sensor >/dev/null && groupdel sie-dns-sensor
-getent passwd sie-dns-sensor >/dev/null && userdel sie-dns-sensor
 
 %files
 %config(noreplace) /etc/default/sie-dns-sensor
