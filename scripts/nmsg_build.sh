@@ -12,11 +12,20 @@ if [ ! -f "tarballs/nmsg-$VERSION.tar.gz" ]; then
     exit 1
 fi
 
+MYARCH="$(uname -m)"
 BUILDDIR="$(pwd)/builds/$VERSION"
 mkdir -p $BUILDDIR
 
 while read line; do
-    variant="$(echo $line | awk '{print$1}')"
+    buildarch="$(echo $line | awk '{print$1}')"
+    variant="$(echo $line | awk '{print$2}')"
+
+    if [ "$MYARCH" != "$buildarch" ]; then
+        echo
+        echo " >>>>>>> skipping variant $variant (not our build arch) <<<<<<<"
+        echo
+        continue
+    fi
 
     echo
     echo " >>>>>>> building for variant $variant <<<<<<<"
