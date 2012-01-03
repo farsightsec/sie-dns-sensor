@@ -1,0 +1,38 @@
+#!/bin/sh -e
+
+. /etc/default/sie-dns-sensor
+. /usr/lib/sie/functions
+
+if ! check_sie_config ; then
+    exit 1
+fi
+
+channel="$1"
+fname="$2"
+
+if [ -z "$syslog_priority" ]; then
+    syslog_priority="local5.info"
+fi
+
+LOGGER="logger -t sie -p $syslog_priority"
+
+if [ -z "$channel" -o -z "$fname" ]; then
+    echo "Usage: $0 <CHANNEL> <NMSGfile>"
+    exit 1
+fi
+
+if ! check_uploadkey ; then
+    $LOGGER "upload key does not exist"
+    exit 1
+fi
+
+basename=$(basename $fname)
+case X$basename in
+    X*.nmsg)
+        queue_and_upload nmsg "$channel" "$fname" | $LOGGER
+        ;;
+    *)
+        echo "$0: unknown filetype: $fname"
+        exit 1
+        ;;
+esac

@@ -1,0 +1,27 @@
+#!/bin/bash -e
+
+. /etc/default/sie-dns-sensor
+. /usr/lib/sie/functions
+
+if [ -z "$waitdir" -o -z "$max_spool_size_kbytes" ]; then
+    exit 0
+fi
+
+if [ ! -d "$waitdir" ]; then
+    exit 0
+fi
+
+if [ -z "$syslog_priority" ]; then
+    syslog_priority="local5.info"
+fi
+
+while true; do
+    spool_size=$(du -sk "$waitdir" | cut -f1)
+    if [ $spool_size -gt $max_spool_size_kbytes ]; then
+        fname=$(find "$waitdir" -type f | sort -n | head -1)
+        echo "spool overflow, removing $fname" | logger -t sie -p $syslog_priority
+        rm -f "$fname"
+    else
+        exit 0
+    fi
+done

@@ -1,0 +1,3 @@
+var/spool/sie/locks
+var/spool/sie/keys
+var/spool/sie/waiting

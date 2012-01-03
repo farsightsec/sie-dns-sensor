@@ -1,0 +1,96 @@
+#!/bin/bash
+#
+# Start/Stop the SIE DNS sensor.
+#
+# chkconfig: 2345 99 60
+# description: SIE DNS sensor
+# processname: nmsgtool
+# config: /etc/default/sie-dns-sensor
+# pidfile: /var/run/nmsgtool.pid
+
+### BEGIN INIT INFO
+# Provides: sie_dns_sensor
+# Required-Start: $local_fs $network $syslog
+# Required-Stop: $local_fs $network $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+### END INIT INFO
+
+. /etc/init.d/functions
+. /etc/default/sie-dns-sensor
+. /usr/lib/sie/functions
+ 
+DESC="SIE DNS sensor"
+LOCK="/var/lock/subsys/sie-dns-sensor"
+PID="/var/run/nmsgtool.pid"
+
+if [ -z "$memory_ulimit_kbytes" ]; then
+    memory_ulimit_kbytes="524288"
+fi
+
+ulimit -d $memory_ulimit_kbytes
+ulimit -m $memory_ulimit_kbytes
+ulimit -v $memory_ulimit_kbytes
+
+start() {
+    if ! check_sie_config ; then
+        echo -n $"sie-dns-sensor: unable to start."
+        failure $"sie-dns-sensor: unable to start."
+        echo
+        return 1
+    fi
+
+    if [ ! -f $LOCK ]; then
+        prepare_nmsgtool_environment $PID
+        echo -n $"Starting $DESC: "
+        daemon nmsgtool
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && touch $LOCK
+        echo
+    fi
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $DESC: "
+    killproc nmsgtool
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && rm -f $LOCK
+    echo
+    return $RETVAL
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    restart
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    reload)
+        reload
+        ;;
+    restart)
+        restart
+        ;;
+    status)
+        status sie-dns-sensor
+        ;;
+    condrestart)
+        if [ -f $LOCK ]; then
+            restart
+        fi
+        ;;
+    *)
+    echo $"Usage: $0 {start|stop|status|reload|restart|condrestart}"
+    exit 1
+esac

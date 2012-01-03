@@ -1,0 +1,216 @@
+lockdir="$spooldir/locks"
+waitdir="$spooldir/waiting"
+newdir="$spooldir/new"
+archivedir="$spooldir/archive"
+knownhosts="/var/spool/sie/keys/known_hosts"
+
+bpfpat_cache="((@SRC@) and udp dst port 53) or ((@DST@) and udp src port 53) or ((@SRC@) and icmp)"
+bpfpat_auth="((@DST@) and udp dst port 53) or ((@SRC@) and udp src port 53) or ((@DST@) and icmp)"
+
+### optional settings
+
+if [ -z "$rsync" ]; then
+    rsync="sie-rsync"
+fi
+
+if [ -z "$wrapsrv" ]; then
+    wrapsrv="sie-wrapsrv"
+fi
+
+if [ -z "$outfile_prefix" ]; then
+    if [ "$(uname)" = "Linux" ]; then
+        outfile_prefix="$(hostname --fqdn)"
+    else
+        outfile_prefix="$(hostname)"
+    fi
+fi
+
+if [ -z "$archive" ]; then
+    archive="no"
+else
+    case "$archive" in
+        [Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|1)
+            archive="yes"
+            ;;
+        *)
+            archive="no"
+            ;;
+    esac
+fi
+
+if [ -z "$upload" ]; then
+    upload="yes"
+else
+    case "$upload" in
+        [Yy][Ee][Ss]|[Tt][Rr][Uu][Ee]|1)
+            upload="yes"
+            ;;
+        *)
+            upload="no"
+            ;;
+    esac
+fi
+
+### internal settings
+
+ssh_cmd="ssh -p %p -i $uploadkey -o UserKnownHostsFile=$knownhosts -o StrictHostKeyChecking=yes"
+rsync_args="--timeout=10 --remove-source-files"
+submitservice="_rsync._tcp."
+
+check_sie_config() {
+    if [ -z "$spooldir" ]; then echo "$0: spooldir is unset"; return 1; fi
+    if [ -z "$uploadkey" ]; then echo "$0: uploadkey is unset"; return 1; fi
+    if [ -z "$login" ]; then echo "$0: login is unset"; return 1; fi
+    if [ -z "$submitserver" ]; then echo "$0: submitserver is unset"; return 1; fi
+    if [ -z "$interval" ]; then echo "$0: interval is unset"; return 1; fi
+    if [ -z "$maxper" ]; then echo "$0: maxper is unset"; return 1; fi
+    return 0
+}
+
+check_uploadkey() {
+    if [ -f "$uploadkey" ]; then return 0; else return 1; fi
+}
+
+makedir() {
+    if ! [ -d "$1" ]; then
+        mkdir -p "$1"
+    fi
+}
+
+random_sleep() {
+    if [ ! -z "$RANDOM" ]; then
+        sleep $(expr $RANDOM % $interval)
+    else
+        sleep $(expr $$ % $interval)
+    fi
+}
+
+do_archive() {
+    channel="$1"
+    shift
+    fname="$1"
+
+    destdir="$archivedir/$channel"
+    makedir "$destdir"
+
+    ln "$fname" "$destdir/$(basename $fname)"
+}
+
+do_upload() {
+    filetype="$1"
+    shift
+    channel="$1"
+
+    makedir "$lockdir"
+    makedir "$waitdir"
+
+    lockfile="$lockdir/upload.sie.${channel}"
+
+    if [ -s "$lockfile" ]; then
+        pid="$(head -1 $lockfile)"
+        if kill -0 "$pid" 2>/dev/null; then
+            exit
+        fi
+    fi
+
+    trap "rm -f $lockfile; exit" 0 1 2 3 4 5 6 15
+    echo $$ > $lockfile
+
+    random_sleep
+
+    while :; do
+        files=$(find $waitdir/$channel -name "*.${filetype}" 2>/dev/null | head -n $maxper)
+        if [ -z "$files" ]; then
+            break
+        fi
+        for file in $files; do
+            $wrapsrv ${submitservice}${submitserver} \
+                $rsync -e "\"$ssh_cmd\"" $rsync_args \
+                "$file" "${login}@%h:up/${channel}/" 2>&1
+
+            if [ "$?" != "0" ]; then
+                echo "failed to upload $file"
+                exit 1
+            fi
+            echo "successfully uploaded $file"
+        done
+    done
+
+    rm -f $lockfile
+}
+
+queue_and_upload() {
+    filetype="$1"
+    shift
+    channel="$1"
+    shift
+    fname="$1"
+
+    if [ "$archive" = "yes" ]; then
+        do_archive "$channel" "$fname"
+    fi
+
+    if [ "$upload" = "yes" ]; then
+        destdir="$waitdir/$channel"
+        makedir "$destdir"
+
+        mv "$fname" "$destdir/$(basename $fname)"
+        do_upload "$filetype" "$channel"
+    else
+        rm -f "$fname"
+    fi
+}
+
+prepare_nmsgtool_environment() {
+    pid="$1"
+    if [ -z "$pid" ]; then
+        pid="/var/run/nmsgtool.pid"
+    fi
+
+    if [ -z "$channel" ]; then
+        echo "$0: channel is unset"
+        exit 1
+    fi
+
+    if [ -z "$interface" ]; then
+        echo "$0: interface is unset"
+        exit 1
+    fi
+
+    if [ -z "$bpfpat" ]; then
+        if [ -z "$dnstype" ]; then
+            echo "$0: dnstype is unset"
+            exit 1
+        fi
+
+        if [ -z "$bpfpat_src" ]; then
+            echo "$0: bpfpat_src is unset"
+            exit 1
+        fi
+
+        if [ -z "$bpfpat_dst" ]; then
+            echo "$0: bpfpat_dst is unset"
+            exit 1
+        fi
+
+        if [ "$dnstype" = "cache" ]; then
+            bpf="$bpfpat_cache"
+        elif [ "$dnstype" = "auth" ]; then
+            bpf="$bpfpat_auth"
+        else
+            echo "$0: unknown dnstype $dnstype in $conffile"
+            exit 1
+        fi
+
+        bpf=$(echo "$bpf" | sed -e "s,@DST@,$bpfpat_dst,g" -e "s,@SRC@,$bpfpat_src,g")
+    else
+        bpf="$bpfpat"
+    fi
+
+    makedir "$newdir/$channel"
+
+    export DNSQR_CAPTURE_RD="0"
+    export NMSG_BPF="$bpf"
+    export NMSG_KICKER="/usr/lib/sie/sie-kicker $channel"
+    export ARGV_NMSGTOOL="-D -P $pid -i $interface -V ISC -T dnsqr -z -t 60 -w $newdir/$channel/${outfile_prefix}"
+}

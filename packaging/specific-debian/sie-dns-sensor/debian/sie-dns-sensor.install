@@ -1,0 +1,12 @@
+etc/cron.d/sie-trim-spool
+etc/default/sie-dns-sensor
+var/spool/sie/keys/known_hosts
+usr/bin/sie-rsync
+usr/bin/nmsgtool
+usr/bin/sie-gen-key
+usr/bin/sie-wrapsrv
+usr/lib/sie/sie-kicker
+usr/lib/sie/sie-trim-spool
+usr/lib/sie/functions
+usr/lib/*.so*
+usr/lib/nmsg/nmsg_*.so

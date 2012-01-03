@@ -1,0 +1,25 @@
+#!/bin/sh -e
+
+. /etc/default/sie-dns-sensor
+. /usr/lib/sie/functions
+if ! check_sie_config ; then
+    echo "$0: a required config variable is missing."
+    exit 1
+fi
+
+if [ -e "$uploadkey" ]; then
+    echo "$0: $uploadkey already exists"
+    exit 1
+fi
+
+if [ "$(uname)" = "Linux" ]; then
+    hostname="$(hostname --fqdn)"
+else
+    hostname="$(hostname)"
+fi
+
+mkdir -p $(dirname $uploadkey)
+
+ssh-keygen -t rsa -b 1024 -f $uploadkey -N '' -C "$hostname"
+
+echo -e "\n ===> please email the contents of $uploadkey.pub to info@sie.isc.org\n"

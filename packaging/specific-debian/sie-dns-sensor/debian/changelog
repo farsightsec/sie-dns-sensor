@@ -1,0 +1,5 @@
+sie-dns-sensor (@VERSION@-1) unstable; urgency=low
+
+  * sie-dns-sensor based on nmsg @VERSION@.
+
+ -- ISC SIE <info@sie.isc.org>  @DATE@

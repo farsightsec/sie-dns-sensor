@@ -1,0 +1,13 @@
+Source: sie-dns-sensor
+Section: net
+Priority: extra
+Maintainer: Robert S. Edmonds (ISC) <edmonds@isc.org>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.8.4
+
+Package: sie-dns-sensor
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Conflicts: nmsgtool
+Description: SIE DNS sensor
+ SIE DNS sensor
