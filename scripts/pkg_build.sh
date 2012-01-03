@@ -7,6 +7,7 @@ if [ -z "$VERSION" ]; then
     exit 1
 fi
 
+MYARCH="$(uname -m)"
 BINARIES="$(pwd)/binaries/$VERSION"
 BUILDS="$(pwd)/builds/$VERSION"
 BUILDDEPS="$(pwd)/build-deps"
@@ -17,8 +18,16 @@ DATE="$(date -R)"
 mkdir -p $BINARIES
 
 while read line; do
-    variant="$(echo $line | awk '{print$1}')"
-    elversion="$(echo $line | awk '{print$2}')"
+    buildarch="$(echo $line | awk '{print$1}')"
+    variant="$(echo $line | awk '{print$2}')"
+    elversion="$(echo $line | awk '{print$3}')"
+
+    if [ "$MYARCH" != "$buildarch" ]; then
+        echo
+        echo " >>>>>>> skipping variant $variant (not our build arch) <<<<<<<"
+        echo
+        continue
+    fi
 
     echo
     echo " >>>>>>> packaging for variant $variant <<<<<<<"
