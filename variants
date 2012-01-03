@@ -1,8 +1,9 @@
-debian-5.0-amd64
-debian-5.0-i386
-centos4-amd64 el4
-centos4-i386 el4
-centos5-amd64 el5
-centos5-i386 el5
-sl6-amd64 el6
-sl6-i386 el6
+ia64 debian-5.0-ia64
+x86_64 debian-5.0-amd64
+x86_64 debian-5.0-i386
+x86_64 centos4-amd64 el4
+x86_64 centos4-i386 el4
+x86_64 centos5-amd64 el5
+x86_64 centos5-i386 el5
+x86_64 sl6-amd64 el6
+x86_64 sl6-i386 el6
