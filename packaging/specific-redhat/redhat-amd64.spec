@@ -26,9 +26,7 @@ exit 0
 
 %preun
 if [ "$1" = 0 ]; then
-    if [ -f /var/lock/subsys/sie-dns-sensor ]; then
-        /sbin/service sie-dns-sensor stop >/dev/null 2>&1
-    fi
+    /sbin/service sie-dns-sensor stop >/dev/null 2>&1
     /sbin/chkconfig --del sie-dns-sensor
 fi
 
