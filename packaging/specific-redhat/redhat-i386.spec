@@ -15,12 +15,14 @@ Prereq: /sbin/chkconfig /etc/init.d /sbin/service
 SIE DNS capture package
 
 %pre
-getent group sie-dns-sensor >/dev/null || groupadd -r sie-dns-sensor
+getent group sie-dns-sensor >/dev/null || groupadd -r sie-dns-sensor >/dev/null 2>&1 || true
 getent passwd sie-dns-senor >/dev/null || \
-useradd -r -g sie-dns-sensor -d /var/spool/sie -s /sbin/nologin sie-dns-sensor
-exit 0
+useradd -r -g sie-dns-sensor -d /var/spool/sie -s /sbin/nologin sie-dns-sensor >/dev/null 2>&1 || true
 
 %post
+getent group sie-dns-sensor >/dev/null || groupadd -r sie-dns-sensor >/dev/null 2>&1 || true
+getent passwd sie-dns-senor >/dev/null || \
+useradd -r -g sie-dns-sensor -d /var/spool/sie -s /sbin/nologin sie-dns-sensor >/dev/null 2>&1 || true
 /sbin/ldconfig
 /sbin/chkconfig --add sie-dns-sensor
 
