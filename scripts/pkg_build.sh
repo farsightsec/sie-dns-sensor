@@ -59,15 +59,13 @@ while read line; do
             ;;
 
         centos*|sl*)
-            cp -a $PACKAGING/specific-redhat/sie-dns-sensor $PKGDIR/
+            cp -a $PACKAGING/specific-redhat/* $PKGDIR/
             case "$variant" in
                 *amd64)
                     target="x86_64"
-                    cp $PACKAGING/specific-redhat/redhat-amd64.spec $PKGDIR/redhat.spec
                 ;;
                 *i386)
                     target="i386"
-                    cp $PACKAGING/specific-redhat/redhat-i386.spec $PKGDIR/redhat.spec
                 ;;
             esac
             sed -i \
