@@ -1,0 +1,32 @@
+I. Building new sensor packages based on new nmsg releases
+----------------------------------------------------------
+
+    Assuming new nmsg version "X.Y.Z" and architecture "ARCH". Valid
+    values for ARCH are currently "x86" and "ia64".
+
+    1. Switch to master branch.
+    
+        >>> git checkout master
+
+    2. Add new nmsg release tarball to 'tarballs/' directory.
+
+        >>> git add tarballs/nmsg-X.Y.Z.tar.gz
+        >>> git commit -m 'tarballs/nmsg-0.6.17.tar.gz'
+
+    3. Switch to new architecture-specific, version-specific build branch.
+
+        >>> git checkout -b binaries/ARCH/X.Y.Z
+
+    4. Perform nmsg and package builds.
+
+        >>> ./scripts/build.sh X.Y.Z
+
+    5. If successful, commit binaries to the build branch.
+
+        >>> git add binaries/X.Y.Z
+        >>> git commit -m 'binaries/ARCH/X.Y.Z'
+
+    6. Merge the build branch to master.
+
+        >>> git checkout master
+        >>> git merge --no-ff binaries/ARCH/X.Y.Z
