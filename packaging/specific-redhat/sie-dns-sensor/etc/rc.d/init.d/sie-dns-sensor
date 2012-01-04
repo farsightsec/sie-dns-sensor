@@ -39,6 +39,23 @@ is_running() {
     return 1
 }
 
+setup_user_and_group() {
+    getent group sie-dns-sensor 1>/dev/null 2>&1 || \
+        groupadd \
+            -r sie-dns-sensor \
+            1>/dev/null 2>&1 || \
+        true
+
+    getent passwd sie-dns-sensor 1>/dev/null 2>&1 || \
+        useradd \
+            -r \
+            -g sie-dns-sensor \
+            -d /var/spool/sie \
+            -s /sbin/nologin sie-dns-sensor \
+            1>/dev/null 2>&1 || \
+        true
+}
+
 start() {
     if ! check_sie_config ; then
         echo -n $"sie-dns-sensor: unable to start."
@@ -48,6 +65,7 @@ start() {
     fi
 
     if ! is_running ; then
+        setup_user_and_group
         prepare_nmsgtool_environment $PIDFILE
         echo -n $"Starting $DESC: "
         daemon nmsgtool
