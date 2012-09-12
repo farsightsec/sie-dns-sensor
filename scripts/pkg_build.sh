@@ -13,7 +13,7 @@ if [ -z "$RELEASE" ]; then
 fi
 
 MYARCH="$(uname -m)"
-BINARIES="$(pwd)/binaries/$VERSION"
+BINARIES="$(pwd)/binaries/$VERSION-$RELEASE"
 BUILDS="$(pwd)/builds/$VERSION"
 BUILDDEPS="$(pwd)/build-deps"
 PACKAGING="$(pwd)/packaging"
