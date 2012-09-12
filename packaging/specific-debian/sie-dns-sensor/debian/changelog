@@ -1,4 +1,4 @@
-sie-dns-sensor (@VERSION@-1) unstable; urgency=low
+sie-dns-sensor (@VERSION@-@RELEASE@) unstable; urgency=low
 
   * sie-dns-sensor based on nmsg @VERSION@.
 
