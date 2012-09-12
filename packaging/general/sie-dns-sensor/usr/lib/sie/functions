@@ -2,7 +2,6 @@ lockdir="$spooldir/locks"
 waitdir="$spooldir/waiting"
 newdir="$spooldir/new"
 archivedir="$spooldir/archive"
-knownhosts="/var/spool/sie/keys/known_hosts"
 
 ### optional settings
 
@@ -12,6 +11,10 @@ fi
 
 if [ -z "$wrapsrv" ]; then
     wrapsrv="sie-wrapsrv"
+fi
+
+if [ -z "$knownhosts" ]; then
+    knownhosts="/var/spool/sie/keys/known_hosts"
 fi
 
 if [ -z "$outfile_prefix" ]; then
