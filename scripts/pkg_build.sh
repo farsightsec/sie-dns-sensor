@@ -1,10 +1,15 @@
 #!/bin/sh -e
 
 VERSION="$1"
+RELEASE="$2"
 
 if [ -z "$VERSION" ]; then
-    echo "Usage: $0 <VERSION>"
+    echo "Usage: $0 <VERSION> [<RELEASE>]"
     exit 1
+fi
+
+if [ -z "$RELEASE" ]; then
+    RELEASE="1"
 fi
 
 MYARCH="$(uname -m)"
@@ -50,6 +55,7 @@ while read line; do
             cp -a $PACKAGING/specific-debian/* $PKGDIR/
             sed -i \
                 -e "s/@VERSION@/$VERSION/g" \
+                -e "s/@RELEASE@/$RELEASE/g" \
                 -e "s/@DATE@/$DATE/g" \
                 $PKGDIR/sie-dns-sensor/debian/changelog
 
@@ -70,7 +76,7 @@ while read line; do
             esac
             sed -i \
                 -e "s/@VERSION@/$VERSION/g" \
-                -e "s/@RELEASE@/1.$elversion/g" \
+                -e "s/@RELEASE@/$RELEASE.$elversion/g" \
                 $PKGDIR/redhat.spec
 
             cd $PKGDIR && \
