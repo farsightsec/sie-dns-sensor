@@ -50,6 +50,9 @@ while read line; do
 
     install -m 0755 $BUILDDEPS/$variant/dest/usr/bin/sie-* $PKGDIR/sie-dns-sensor/usr/bin/
 
+    mkdir -p $PKGDIR/sie-dns-sensor/var/spool/sie/locks
+    mkdir -p $PKGDIR/sie-dns-sensor/var/spool/sie/waiting
+
     case "$variant" in
         debian*)
             cp -a $PACKAGING/specific-debian/* $PKGDIR/
