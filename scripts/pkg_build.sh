@@ -14,7 +14,7 @@ fi
 
 MYARCH="$(uname -m)"
 BINARIES="$(pwd)/binaries/$VERSION-$RELEASE"
-BUILDS="$(pwd)/builds/$VERSION"
+BUILDS="$(pwd)/builds/$VERSION-$RELEASE"
 BUILDDEPS="$(pwd)/build-deps"
 PACKAGING="$(pwd)/packaging"
 
