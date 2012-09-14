@@ -4,6 +4,13 @@
 # Script to give the appropriate compiler flags and linker flags
 # to use when building code that uses libpcap.
 #
+prefix="/usr"
+exec_prefix="${prefix}"
+includedir="${prefix}/include"
+libdir="${exec_prefix}/lib"
+V_RPATH_OPT="-Wl,-rpath,"
+LIBS=""
+
 static=0
 show_cflags=0
 show_libs=0
@@ -29,14 +36,14 @@ do
 	esac
 	shift
 done
-if [ "-Wl,-rpath," != "" ]
+if [ "$V_RPATH_OPT" != "" ]
 then
 	#
 	# If libdir isn't /usr/lib, add it to the run-time linker path.
 	#
-	if [ "/usr/lib" != "/usr/lib" ]
+	if [ "$libdir" != "/usr/lib" ]
 	then
-		RPATH=-Wl,-rpath,/usr/lib
+		RPATH=$V_RPATH_OPT$libdir
 	fi
 fi
 if [ "$static" = 1 ]
@@ -47,19 +54,19 @@ then
 	#
 	if [ "$show_cflags" = 1 -a "$show_libs" = 1 ]
 	then
-		echo "-I/usr/include -L/usr/lib -lpcap "
+		echo "-I$includedir -L$libdir -lpcap $LIBS"
 	elif [ "$show_cflags" = 1 -a "$show_additional_libs" = 1 ]
 	then
-		echo "-I/usr/include -L/usr/lib "
+		echo "-I$includedir -L$libdir $LIBS"
 	elif [ "$show_cflags" = 1 ]
 	then
-		echo "-I/usr/include"
+		echo "-I$includedir"
 	elif [ "$show_libs" = 1 ]
 	then
-		echo "-L/usr/lib -lpcap "
+		echo "-L$libdir -lpcap $LIBS"
 	elif [ "$show_additional_libs" = 1 ]
 	then
-		echo ""
+		echo "$LIBS"
 	fi
 else
 	#
@@ -68,15 +75,15 @@ else
 	#
 	if [ "$show_cflags" = 1 -a "$show_libs" = 1 ]
 	then
-		echo "-I/usr/include -L/usr/lib $RPATH -lpcap"
+		echo "-I$includedir -L$libdir $RPATH -lpcap"
 	elif [ "$show_cflags" = 1 -a "$show_additional_libs" = 1 ]
 	then
-		echo "-I/usr/include"
+		echo "-I$includedir"
 	elif [ "$show_cflags" = 1 ]
 	then
-		echo "-I/usr/include"
+		echo "-I$includedir"
 	elif [ "$show_libs" = 1 ]
 	then
-		echo "-L/usr/lib $RPATH -lpcap"
+		echo "-L$libdir $RPATH -lpcap"
 	fi
 fi
