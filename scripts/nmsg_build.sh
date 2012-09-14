@@ -1,10 +1,15 @@
 #!/bin/sh -e
 
 VERSION="$1"
+RELEASE="$2"
 
 if [ -z "$VERSION" ]; then
-    echo "Usage: $0 <VERSION>"
+    echo "Usage: $0 <VERSION> [<RELEASE>]"
     exit 1
+fi
+
+if [ -z "$RELEASE" ]; then
+    RELEASE="1"
 fi
 
 if [ ! -f "tarballs/nmsg-$VERSION.tar.gz" ]; then
@@ -13,7 +18,7 @@ if [ ! -f "tarballs/nmsg-$VERSION.tar.gz" ]; then
 fi
 
 MYARCH="$(uname -m)"
-BUILDDIR="$(pwd)/builds/$VERSION"
+BUILDDIR="$(pwd)/builds/$VERSION-$RELEASE"
 mkdir -p $BUILDDIR
 
 while read line; do
