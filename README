@@ -23,7 +23,7 @@ I. Building new sensor packages based on new nmsg releases
 
     5. If successful, commit binaries to the build branch.
 
-        >>> git add binaries/X.Y.Z R
+        >>> git add binaries/X.Y.Z-R
         >>> git commit -m 'binaries/ARCH/X.Y.Z-R'
 
     6. Merge the build branch to master.
