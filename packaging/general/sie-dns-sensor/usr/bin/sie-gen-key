@@ -13,14 +13,8 @@ if [ -e "$uploadkey" ]; then
     exit 1
 fi
 
-if [ "$(uname)" = "Linux" ]; then
-    hostname="$(hostname --fqdn)"
-else
-    hostname="$(hostname)"
-fi
-
 mkdir -p $(dirname $uploadkey)
 
-ssh-keygen -t rsa -b 1024 -f $uploadkey -N '' -C "$hostname"
+ssh-keygen -t rsa -b 1024 -f $uploadkey -N '' -C "$(get_hostname)"
 
 echo -e "\n ===> please email the contents of $uploadkey.pub to info@sie.isc.org\n"
