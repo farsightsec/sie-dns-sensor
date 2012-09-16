@@ -1,1 +1,1 @@
-*/5 * * * * root test -x /usr/lib/sie/sie-trim-spool && /usr/lib/sie/sie-trim-spool
+*/5 * * * * root test -x /usr/lib/sie/sie-trim-spool && /usr/lib/sie/sie-trim-spool || exit 0
