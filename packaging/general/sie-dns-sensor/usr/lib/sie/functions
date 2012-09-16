@@ -17,14 +17,6 @@ if [ -z "$knownhosts" ]; then
     knownhosts="/var/spool/sie/keys/known_hosts"
 fi
 
-if [ -z "$outfile_prefix" ]; then
-    if [ "$(uname)" = "Linux" ]; then
-        outfile_prefix="$(hostname --fqdn)"
-    else
-        outfile_prefix="$(hostname)"
-    fi
-fi
-
 if [ -z "$archive" ]; then
     archive="no"
 else
@@ -56,6 +48,21 @@ fi
 ssh_cmd="ssh -p %p -i $uploadkey -o UserKnownHostsFile=$knownhosts -o StrictHostKeyChecking=yes"
 rsync_args="--timeout=10 --remove-source-files"
 submitservice="_rsync._tcp."
+
+get_hostname() {
+    if [ "$(uname)" = "Linux" ]; then
+        h="$(hostname --fqdn 2>/dev/null)"
+        if [ -z "$h" ]; then
+            h="$(hostname 2>/dev/null)"
+        fi
+    else
+        h="$(hostname 2>/dev/null)"
+    fi
+    if [ -z "$h" ]; then
+        h="unknown"
+    fi
+    echo $h
+}
 
 check_sie_config() {
     if [ -z "$spooldir" ]; then echo "$0: spooldir is unset"; return 1; fi
@@ -175,6 +182,12 @@ prepare_nmsgtool_environment() {
     pid="$1"
     if [ -z "$pid" ]; then
         pid="/var/run/nmsgtool.pid"
+    fi
+
+    outfile_prefix="$(get_hostname)"
+    if [ -z "$outfile_prefix" ]; then
+        echo "$0: unable to determine hostname"
+        exit 1
     fi
 
     if [ -z "$channel" ]; then
