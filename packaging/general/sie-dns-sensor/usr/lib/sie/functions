@@ -213,8 +213,15 @@ prepare_nmsgtool_environment() {
         fi
     fi
 
+    export DNSQR_FILTER_QNAMES_EXCLUDE
+    export DNSQR_FILTER_QNAMES_INCLUDE
+    export DNSQR_QUERY_TIMEOUT
+    export DNSQR_STATE_TABLE_MAX
+    export DNSQR_ZERO_RESOLVER_ADDRESS
+
     export DNSQR_RES_ADDRS
     export DNSQR_AUTH_ADDRS
+
     export NMSG_KICKER="/usr/lib/sie/sie-kicker $channel"
     export ARGV_NMSGTOOL="$NMSG_USER -D -P $pid -i $interface -V ISC -T dnsqr -z -t 60 -w $newdir/$channel/${outfile_prefix}"
 }
