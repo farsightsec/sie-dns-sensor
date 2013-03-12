@@ -50,7 +50,7 @@ build_libtool_libs=no
 build_old_libs=yes
 
 # What type of objects to build.
-pic_mode=default
+pic_mode=yes
 
 # Whether or not to optimize for fast installation.
 fast_install=needless
@@ -292,7 +292,7 @@ striplib="strip --strip-unneeded"
 
 
 # The linker used to build libraries.
-LD="/usr/bin/ld"
+LD="/usr/bin/ld -m elf_i386"
 
 # How to create reloadable object files.
 reload_flag=" -r"

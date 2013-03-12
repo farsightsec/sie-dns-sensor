@@ -50,7 +50,7 @@ build_libtool_libs=no
 build_old_libs=yes
 
 # What type of objects to build.
-pic_mode=default
+pic_mode=yes
 
 # Whether or not to optimize for fast installation.
 fast_install=needless
@@ -272,7 +272,7 @@ finish_eval=""
 hardcode_into_libs=yes
 
 # Compile-time system search path for libraries.
-sys_lib_search_path_spec="/usr/lib/gcc/x86_64-redhat-linux/4.4.6 /usr/lib64 /lib64 "
+sys_lib_search_path_spec="/usr/lib/gcc/x86_64-redhat-linux/4.4.7 /usr/lib64 /lib64 "
 
 # Run-time system search path for libraries.
 sys_lib_dlsearch_path_spec="/lib /usr/lib "

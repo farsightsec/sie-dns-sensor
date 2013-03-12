@@ -50,7 +50,7 @@ build_libtool_libs=no
 build_old_libs=yes
 
 # What type of objects to build.
-pic_mode=default
+pic_mode=yes
 
 # Whether or not to optimize for fast installation.
 fast_install=needless
