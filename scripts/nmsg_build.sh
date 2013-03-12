@@ -65,7 +65,9 @@ while read line; do
     tar -C $BUILDDIR/src/$variant -zxf tarballs/nmsg-$VERSION.tar.gz
 
     builddep_path="$(pwd)/build-deps/$variant/dest/usr"
-    schroot -c $variant -- sh -c "cd $BUILDDIR/src/$variant/nmsg-$VERSION && ./configure CFLAGS=-I$builddep_path/include --prefix=/usr --sysconfdir=/etc --libdir=/usr/$lib --with-plugindir=/usr/$lib/nmsg --with-libpcap=$builddep_path --with-libustr=no --with-libwdns=no --with-libprotobuf_c=no && make clean && make -j4 && make install DESTDIR=$BUILDDIR/dest/$variant"
+    builddep_cflags="-I$builddep_path/include"
+    builddep_ldflags="-L$builddep_path/lib"
+    schroot -c $variant -- sh -c "cd $BUILDDIR/src/$variant/nmsg-$VERSION && ./configure CFLAGS=$builddep_cflags LDFLAGS=$builddep_ldflags libwdns_CFLAGS=$builddep_cflags libwdns_LIBS=$builddep_ldflags --prefix=/usr --sysconfdir=/etc --libdir=/usr/$lib --with-plugindir=/usr/$lib/nmsg --with-libpcap=$builddep_path --with-libprotobuf_c=no --with-libxs=no  && make clean && make -j4 && make install DESTDIR=$BUILDDIR/dest/$variant"
 
     cp -av $BUILDDIR/dest/$variant/usr/bin/nmsgtool $BUILDDIR/out/$variant/usr/bin/nmsgtool
     cp -av $BUILDDIR/dest/$variant/usr/$lib/*.so* $BUILDDIR/out/$variant/usr/$lib
