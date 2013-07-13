@@ -1,6 +1,9 @@
 I. Building new sensor packages based on new nmsg releases
 ----------------------------------------------------------
 
+    Note: This build system requires an appropriate schroot build
+    environment, which is outside the scope of this document.
+
     Assuming new nmsg version "X.Y.Z" and architecture "ARCH". Valid
     values for ARCH are currently "x86" and "ia64".
 
