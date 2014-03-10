@@ -17,4 +17,4 @@ mkdir -p $(dirname $uploadkey)
 
 ssh-keygen -t rsa -b 1024 -f $uploadkey -N '' -C "$(get_hostname)"
 
-echo -e "\n ===> please email the contents of $uploadkey.pub to passivedns@isc.org\n"
+echo -e "\n ===> Please email the contents of $uploadkey.pub to passivedns@farsightsecurity.com\n"
