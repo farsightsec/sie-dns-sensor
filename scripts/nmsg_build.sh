@@ -59,7 +59,6 @@ while read line; do
     mkdir -p $BUILDDIR/src/$variant
     mkdir -p $BUILDDIR/dest/$variant
     mkdir -p $BUILDDIR/out/$variant
-    mkdir -p $BUILDDIR/out/$variant/usr/bin
     mkdir -p $BUILDDIR/out/$variant/usr/$lib/sie-dns-sensor/nmsg
 
     tar -C $BUILDDIR/src/$variant -zxf tarballs/nmsg-$VERSION.tar.gz
@@ -69,8 +68,9 @@ while read line; do
     builddep_ldflags="-L$builddep_path/lib"
     schroot -c $variant -- sh -c "cd $BUILDDIR/src/$variant/nmsg-$VERSION && ./configure CFLAGS=$builddep_cflags LDFLAGS=$builddep_ldflags libwdns_CFLAGS=$builddep_cflags libwdns_LIBS=\"$builddep_ldflags -lwdns\" --with-pic --prefix=/usr --sysconfdir=/etc --libdir=/usr/$lib/sie-dns-sensor --with-plugindir=/usr/$lib/sie-dns-sensor/nmsg --with-libpcap=$builddep_path --with-libprotobuf_c=no --with-libxs=no && make clean && make && make install DESTDIR=$BUILDDIR/dest/$variant"
 
-    cp -av $BUILDDIR/dest/$variant/usr/bin/nmsgtool $BUILDDIR/out/$variant/usr/bin/sie-nmsgtool
-    cp -av $BUILDDIR/dest/$variant/usr/$lib/sie-dns-sensor/*.so.* $BUILDDIR/out/$variant/usr/$lib/sie-dns-sensor
-    cp -av $BUILDDIR/dest/$variant/usr/$lib/sie-dns-sensor/nmsg/*.so $BUILDDIR/out/$variant/usr/$lib/sie-dns-sensor/nmsg
+    PRIVATEDIR="$BUILDDIR/out/$variant/usr/$lib/sie-dns-sensor"
+    cp -av $BUILDDIR/dest/$variant/usr/bin/nmsgtool $PRIVATEDIR/
+    cp -av $BUILDDIR/dest/$variant/usr/$lib/sie-dns-sensor/*.so.* $PRIVATEDIR/
+    cp -av $BUILDDIR/dest/$variant/usr/$lib/sie-dns-sensor/nmsg/*.so $PRIVATEDIR/nmsg/
 
 done < variants
