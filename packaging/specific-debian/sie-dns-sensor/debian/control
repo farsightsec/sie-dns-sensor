@@ -1,9 +1,9 @@
 Source: sie-dns-sensor
 Section: net
 Priority: extra
-Maintainer: Robert S. Edmonds (ISC) <edmonds@isc.org>
+Maintainer: Farsight Security, Inc. <software@farsightsecurity.com>
 Build-Depends: debhelper (>= 7.0.50~)
-Standards-Version: 3.8.4
+Standards-Version: 3.9.5
 
 Package: sie-dns-sensor
 Architecture: any
