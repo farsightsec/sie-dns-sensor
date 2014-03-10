@@ -181,7 +181,7 @@ queue_and_upload() {
 prepare_nmsgtool_environment() {
     pid="$1"
     if [ -z "$pid" ]; then
-        pid="/var/run/sie-nmsgtool.pid"
+        pid="/var/run/sie-dns-sensor.pid"
     fi
 
     outfile_prefix="$(get_hostname)"
