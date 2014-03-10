@@ -8,7 +8,7 @@
 # Default-Stop: 0 1 6
 ### END INIT INFO
 
-test -x /usr/bin/sie-nmsgtool || exit 0
+test -x /usr/lib/sie-dns-sensor/nmsgtool || exit 0
 test -f /etc/default/sie-dns-sensor || exit 0
 
 . /lib/lsb/init-functions
@@ -16,9 +16,9 @@ test -f /etc/default/sie-dns-sensor || exit 0
 . /usr/lib/sie/functions
  
 DESC="SIE DNS sensor"
-NAME="sie-nmsgtool"
-DAEMON="/usr/bin/sie-nmsgtool"
-PID="/var/run/sie-nmsgtool.pid"
+NAME="nmsgtool"
+DAEMON="/usr/lib/sie-dns-sensor/nmsgtool"
+PID="/var/run/sie-dns-sensor.pid"
 
 if [ -z "$memory_ulimit_kbytes" ]; then
     memory_ulimit_kbytes="524288"
