@@ -60,17 +60,17 @@ while read line; do
     mkdir -p $BUILDDIR/dest/$variant
     mkdir -p $BUILDDIR/out/$variant
     mkdir -p $BUILDDIR/out/$variant/usr/bin
-    mkdir -p $BUILDDIR/out/$variant/usr/$lib/nmsg
+    mkdir -p $BUILDDIR/out/$variant/usr/$lib/sie-dns-sensor/nmsg
 
     tar -C $BUILDDIR/src/$variant -zxf tarballs/nmsg-$VERSION.tar.gz
 
     builddep_path="$(pwd)/build-deps/$variant/dest/usr"
     builddep_cflags="-I$builddep_path/include"
     builddep_ldflags="-L$builddep_path/lib"
-    schroot -c $variant -- sh -c "cd $BUILDDIR/src/$variant/nmsg-$VERSION && ./configure CFLAGS=$builddep_cflags LDFLAGS=$builddep_ldflags libwdns_CFLAGS=$builddep_cflags libwdns_LIBS=\"$builddep_ldflags -lwdns\" --with-pic --prefix=/usr --sysconfdir=/etc --libdir=/usr/$lib --with-plugindir=/usr/$lib/nmsg --with-libpcap=$builddep_path --with-libprotobuf_c=no --with-libxs=no && make clean && make && make check && make install DESTDIR=$BUILDDIR/dest/$variant"
+    schroot -c $variant -- sh -c "cd $BUILDDIR/src/$variant/nmsg-$VERSION && ./configure CFLAGS=$builddep_cflags LDFLAGS=$builddep_ldflags libwdns_CFLAGS=$builddep_cflags libwdns_LIBS=\"$builddep_ldflags -lwdns\" --with-pic --prefix=/usr --sysconfdir=/etc --libdir=/usr/$lib/sie-dns-sensor --with-plugindir=/usr/$lib/sie-dns-sensor/nmsg --with-libpcap=$builddep_path --with-libprotobuf_c=no --with-libxs=no && make clean && make && make install DESTDIR=$BUILDDIR/dest/$variant"
 
-    cp -av $BUILDDIR/dest/$variant/usr/bin/nmsgtool $BUILDDIR/out/$variant/usr/bin/nmsgtool
-    cp -av $BUILDDIR/dest/$variant/usr/$lib/*.so* $BUILDDIR/out/$variant/usr/$lib
-    cp -av $BUILDDIR/dest/$variant/usr/$lib/nmsg/*.so $BUILDDIR/out/$variant/usr/$lib/nmsg
+    cp -av $BUILDDIR/dest/$variant/usr/bin/nmsgtool $BUILDDIR/out/$variant/usr/bin/sie-nmsgtool
+    cp -av $BUILDDIR/dest/$variant/usr/$lib/sie-dns-sensor/*.so.* $BUILDDIR/out/$variant/usr/$lib/sie-dns-sensor
+    cp -av $BUILDDIR/dest/$variant/usr/$lib/sie-dns-sensor/nmsg/*.so $BUILDDIR/out/$variant/usr/$lib/sie-dns-sensor/nmsg
 
 done < variants
