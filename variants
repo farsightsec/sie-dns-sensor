@@ -1,5 +1,5 @@
-x86_64 debian-6.0-amd64
-x86_64 debian-6.0-i386
+x86_64 debian-7-amd64
+x86_64 debian-7-i386
 x86_64 centos-5-amd64 el5
 x86_64 centos-5-i386 el5
 x86_64 centos-6-amd64 el6
