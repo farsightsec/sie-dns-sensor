@@ -6,4 +6,41 @@ if [ "$1" = configure ]; then
     fi
 fi
 
+if [ "$1" = configure ]; then
+    cat <<EOF
+
+sie-dns-sensor
+--------------
+
+This is the sie-dns-sensor package, a passive DNS replication probe
+intended for use with Farsight Security's Security Information Exchange.
+Please see the following URL for more information about Farsight Security:
+
+    https://www.farsightsecurity.com/
+
+The sie-dns-sensor package requires post-install configuration.
+Please see the following URL for the configuration guide:
+
+    https://archive.farsightsecurity.com/Passive_DNS_Sensor/
+
+Support for sie-dns-sensor is available by contacting the following
+email address:
+
+    passivedns@farsightsecurity.com
+
+===> NOTE! <===
+
+The sie-dns-sensor package is optimized for the passive DNS sensor role
+and no longer provides the /usr/bin/nmsgtool command. If necessary,
+please see the following URL for details about installing full-fledged
+nmsg packages on Debian-based systems:
+
+    https://archive.farsightsecurity.com/SIE_Software_Installation_Debian/
+
+(Note that these packages are not necessary for hosts operating solely
+in the passive DNS sensor role.)
+
+EOF
+fi
+
 #DEBHELPER#
