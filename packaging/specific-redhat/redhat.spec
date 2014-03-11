@@ -36,16 +36,16 @@ fi
 %config /etc/cron.d/sie-trim-spool
 %dir /usr/
 %dir /usr/bin/
-/usr/bin/nmsgtool
 /usr/bin/sie-gen-key
 /usr/bin/sie-rsync
 /usr/bin/sie-wrapsrv
 %dir %{_libdir}
-%{_libdir}/libnmsg.so
-%{_libdir}/libnmsg.so.6
-%{_libdir}/libnmsg.so.6.0.0
-%dir %{_libdir}/nmsg
-%{_libdir}/nmsg/nmsg_msg8_isc.so
+%dir %{_libdir}/sie-dns-sensor
+%{_libdir}/sie-dns-sensor/libnmsg.so.6
+%{_libdir}/sie-dns-sensor/libnmsg.so.6.0.0
+%{_libdir}/sie-dns-sensor/nmsgtool
+%dir %{_libdir}/sie-dns-sensor/nmsg
+%{_libdir}/sie-dns-sensor/nmsg/nmsg_msg8_isc.so
 %dir /usr/lib/
 %dir /usr/lib/sie/
 /usr/lib/sie/functions

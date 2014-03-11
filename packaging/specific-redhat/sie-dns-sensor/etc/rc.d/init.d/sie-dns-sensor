@@ -6,7 +6,7 @@
 # description: SIE DNS sensor
 # processname: nmsgtool
 # config: /etc/default/sie-dns-sensor
-# pidfile: /var/run/nmsgtool.pid
+# pidfile: /var/run/sie-dns-sensor.pid
 
 ### BEGIN INIT INFO
 # Provides: sie_dns_sensor
@@ -21,7 +21,15 @@
 . /usr/lib/sie/functions
  
 DESC="SIE DNS sensor"
-PIDFILE="/var/run/nmsgtool.pid"
+PIDFILE="/var/run/sie-dns-sensor.pid"
+
+if test -x /usr/lib64/sie-dns-sensor/nmsgtool; then
+    DAEMON="/usr/lib64/sie-dns-sensor/nmsgtool"
+elif test -x /usr/lib/sie-dns-sensor/nmsgtool; then
+    DAEMON="/usr/lib/sie-dns-sensor/nmsgtool"
+else
+    exit 0
+fi
 
 if [ -z "$memory_ulimit_kbytes" ]; then
     memory_ulimit_kbytes="524288"
@@ -68,14 +76,14 @@ start() {
         setup_user_and_group
         prepare_nmsgtool_environment $PIDFILE
         echo -n $"Starting $DESC: "
-        daemon nmsgtool
+        daemon "$DAEMON"
         echo
     fi
 }
 
 stop() {
     echo -n $"Stopping $DESC: "
-    killproc nmsgtool
+    killproc -p "$PIDFILE" "$DAEMON"
     echo
 }
 
