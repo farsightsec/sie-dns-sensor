@@ -66,8 +66,15 @@ setup_user_and_group() {
 
 start() {
     if ! check_sie_config ; then
-        echo -n $"sie-dns-sensor: unable to start."
-        failure $"sie-dns-sensor: unable to start."
+        echo -n $"sie-dns-sensor: a required config variable is missing."
+        failure $"sie-dns-sensor: a required config variable is missing."
+        echo
+        return 1
+    fi
+
+    if ! check_uploadkey ; then
+        echo -n $"sie-dns-sensor: upload key does not exist."
+        failure $"sie-dns-sensor: upload key does not exist."
         echo
         return 1
     fi
