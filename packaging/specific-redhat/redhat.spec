@@ -15,7 +15,6 @@ Prereq: /sbin/chkconfig /etc/init.d /sbin/service
 SIE DNS capture package
 
 %post
-/sbin/ldconfig
 /sbin/chkconfig --add sie-dns-sensor
 
 %preun
@@ -25,7 +24,6 @@ if [ "$1" = 0 ]; then
 fi
 
 %postun
-/sbin/ldconfig
 if [ "$1" -ge "1" ]; then
     /sbin/service sie-dns-sensor condrestart >/dev/null 2>&1
 fi
