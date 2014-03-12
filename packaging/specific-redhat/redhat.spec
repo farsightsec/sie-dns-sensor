@@ -29,7 +29,7 @@ fi
 # NOTE: the %preun from the OLD version of the package is the one executed.
 if [ "$1" = 0 ]; then
     # This is an uninstall.
-    /sbin/service sie-dns-sensor stop 2>&1 || :
+    /sbin/service sie-dns-sensor stop 1>/dev/null 2>&1 || :
     /sbin/chkconfig --del sie-dns-sensor
 fi
 
