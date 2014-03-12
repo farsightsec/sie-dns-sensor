@@ -45,6 +45,35 @@ fi
 if [ "$1" = "0" ]; then
     # This is an install OR upgrade.
     # NOTE: %posttrans cannot distinguish between the two.
+
+    cat <<EOF
+
+sie-dns-sensor
+--------------
+
+This is the sie-dns-sensor package, a passive DNS replication probe
+intended for use with Farsight Security's Security Information Exchange.
+Please see the following URL for more information about Farsight Security:
+
+    https://www.farsightsecurity.com/
+
+The sie-dns-sensor package requires post-install configuration.
+Please see the following URL for the configuration guide:
+
+    https://archive.farsightsecurity.com/Passive_DNS_Sensor/
+
+Support for sie-dns-sensor is available by contacting the following
+email address:
+
+    passivedns@farsightsecurity.com
+
+===> NOTE! <===
+
+The sie-dns-sensor package is optimized for the passive DNS sensor role
+and no longer provides the /usr/bin/nmsgtool command.
+
+EOF
+
     /sbin/service sie-dns-sensor start 2>&1 || :
 fi
 
