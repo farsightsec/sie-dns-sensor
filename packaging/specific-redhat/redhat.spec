@@ -14,18 +14,38 @@ Prereq: /sbin/chkconfig /etc/init.d /sbin/service
 %description
 SIE DNS capture package
 
+%pre
+# NOTE: the %pre from the NEW version of the package is the one executed.
+if [ "$1" -ge "2" ]; then
+    # This is an upgrade.
+    /sbin/service sie-dns-sensor stop 2>&1 || :
+fi
+
 %post
+# NOTE: the %post from the NEW version of the package is the one executed.
 /sbin/chkconfig --add sie-dns-sensor
 
 %preun
+# NOTE: the %preun from the OLD version of the package is the one executed.
 if [ "$1" = 0 ]; then
-    /sbin/service sie-dns-sensor stop >/dev/null 2>&1
+    # This is an uninstall.
+    /sbin/service sie-dns-sensor stop 2>&1 || :
     /sbin/chkconfig --del sie-dns-sensor
 fi
 
 %postun
+# NOTE: the %postun from the OLD version of the package is the one executed.
 if [ "$1" -ge "1" ]; then
-    /sbin/service sie-dns-sensor condrestart >/dev/null 2>&1
+    # This is an upgrade.
+    /sbin/service sie-dns-sensor condrestart 2>&1 || :
+fi
+
+%posttrans
+# NOTE: the %posttrans from the NEW version of the package is the one executed.
+if [ "$1" = "0" ]; then
+    # This is an install OR upgrade.
+    # NOTE: %posttrans cannot distinguish between the two.
+    /sbin/service sie-dns-sensor start 2>&1 || :
 fi
 
 %files
