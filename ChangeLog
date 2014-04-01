@@ -1,4 +1,4 @@
-sie-dns-sensor (0.7.3-1) UNRELEASED
+sie-dns-sensor (0.7.3-1)
 
   * Update copyright and license statements as a result of the transition from
     Internet Systems Consortium to Farsight Security.
@@ -23,4 +23,4 @@ sie-dns-sensor (0.7.3-1) UNRELEASED
   * Print a brief support notice when the sie-dns-sensor package is installed
     or upgraded.
 
- -- Robert Edmonds <edmonds@fsi.io>  Wed, 12 Mar 2014 17:02:56 -0400
+ -- Robert Edmonds <edmonds@fsi.io>  Tue, 01 Apr 2014 15:01:16 -0400
