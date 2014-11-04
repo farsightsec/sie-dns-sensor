@@ -7,6 +7,6 @@ Standards-Version: 3.9.5
 
 Package: sie-dns-sensor
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, adduser
+Depends: ${misc:Depends}, ${shlibs:Depends}, adduser, openssh-client
 Description: SIE DNS sensor
  SIE DNS sensor
