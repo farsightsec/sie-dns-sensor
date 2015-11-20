@@ -3,6 +3,8 @@ waitdir="$spooldir/waiting"
 newdir="$spooldir/new"
 archivedir="$spooldir/archive"
 
+default_submitserver="submit.sie-network.net"
+
 ### optional settings
 
 if [ -z "$rsync" ]; then
@@ -68,12 +70,14 @@ check_sie_config() {
     if [ -z "$spooldir" ]; then echo "$0: spooldir is unset"; return 1; fi
     if [ -z "$uploadkey" ]; then echo "$0: uploadkey is unset"; return 1; fi
     if [ -z "$login" ]; then echo "$0: login is unset"; return 1; fi
-    if [ -z "$submitserver" ]; then echo "$0: submitserver is unset"; return 1; fi
     if [ -z "$interval" ]; then echo "$0: interval is unset"; return 1; fi
     if [ -z "$maxper" ]; then echo "$0: maxper is unset"; return 1; fi
     if [ -z "$DNSQR_RES_ADDRS" -a -z "$DNSQR_AUTH_ADDRS" ]; then
         echo "$0: one of DNSQR_RES_ADDRS or DNSQR_AUTH_ADDRS must be set"
         return 1
+    fi
+    if [ -z "$submitserver" ]; then
+        submitserver="$default_submitserver"
     fi
     return 0
 }
