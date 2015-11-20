@@ -2,3 +2,4 @@ x86_64 debian-7-amd64
 x86_64 debian-7-i386
 x86_64 centos-6-amd64 el6
 x86_64 centos-6-i386 el6
+x86_64 centos-7-amd64 el7
