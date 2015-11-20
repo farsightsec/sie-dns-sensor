@@ -81,25 +81,19 @@ fi
 %config(noreplace) /etc/default/sie-dns-sensor
 %config /etc/rc.d/init.d/sie-dns-sensor
 %config /etc/cron.d/sie-trim-spool
-%dir /usr/
-%dir /usr/bin/
 /usr/bin/sie-gen-key
 /usr/bin/sie-rsync
 /usr/bin/sie-wrapsrv
-%dir %{_libdir}
 %dir %{_libdir}/sie-dns-sensor
 %{_libdir}/sie-dns-sensor/libnmsg.so.6
 %{_libdir}/sie-dns-sensor/libnmsg.so.6.0.0
 %{_libdir}/sie-dns-sensor/nmsgtool
 %dir %{_libdir}/sie-dns-sensor/nmsg
 %{_libdir}/sie-dns-sensor/nmsg/nmsg_msg8_isc.so
-%dir /usr/lib/
 %dir /usr/lib/sie/
 /usr/lib/sie/functions
 /usr/lib/sie/sie-kicker
 /usr/lib/sie/sie-trim-spool
-%dir /var/
-%dir /var/spool/
 %dir /var/spool/sie
 %dir /var/spool/sie/keys
 /var/spool/sie/keys/known_hosts
