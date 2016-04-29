@@ -116,12 +116,29 @@ extern "C" {
 #define WDNS_TYPE_DHCID		49
 #define WDNS_TYPE_NSEC3		50
 #define WDNS_TYPE_NSEC3PARAM	51
+#define WDNS_TYPE_TLSA		52
+/* Unassigned: 53 - 54 */
 #define WDNS_TYPE_HIP		55
 #define WDNS_TYPE_NINFO		56
 #define WDNS_TYPE_RKEY		57
 #define WDNS_TYPE_TALINK	58
 #define WDNS_TYPE_CDS		59
+#define WDNS_TYPE_CDNSKEY	60
+#define WDNS_TYPE_OPENPGPKEY	61
+#define WDNS_TYPE_CSYNC		62
+/* Unassigned: 63 - 98 */
 #define WDNS_TYPE_SPF		99
+#define WDNS_TYPE_UINFO		100
+#define WDNS_TYPE_UID		101
+#define WDNS_TYPE_GID		102
+#define WDNS_TYPE_UNSPEC	103
+#define WDNS_TYPE_NID		104
+#define WDNS_TYPE_L32		105
+#define WDNS_TYPE_L64		106
+#define WDNS_TYPE_LP		107
+#define WDNS_TYPE_EUI48		108
+#define WDNS_TYPE_EUI64		109
+/* Unassigned: 110 - 248 */
 #define WDNS_TYPE_TKEY		249
 #define WDNS_TYPE_TSIG		250
 #define WDNS_TYPE_IXFR		251
@@ -131,8 +148,12 @@ extern "C" {
 #define WDNS_TYPE_ANY		255
 #define WDNS_TYPE_URI		256
 #define WDNS_TYPE_CAA		257
+/* Unassigned: 258 - 32767 */
 #define WDNS_TYPE_TA		32768
 #define WDNS_TYPE_DLV		32769
+/* Unassigned: 32770 - 65279 */
+/* Private use: 65280 - 65534 */
+/* Reserved: 65535 */
 
 /* Macros. */
 
@@ -250,8 +271,22 @@ WDNS_WARN_UNUSED_RESULT
 wdns_res
 wdns_str_to_name(const char *str, wdns_name_t *name);
 
+WDNS_WARN_UNUSED_RESULT
+wdns_res
+wdns_str_to_name_case(const char *str, wdns_name_t *name);
+
+wdns_res
+wdns_str_to_rcode(const char *str, uint16_t *out);
+
 uint16_t
 wdns_str_to_rrtype(const char *str);
+
+uint16_t
+wdns_str_to_rrclass(const char *str);
+
+wdns_res
+wdns_str_to_rdata(const char * str, uint16_t rrtype, uint16_t rrclass,
+		   uint8_t **rdata, size_t *rdlen);
 
 /* Comparison functions. */
 
