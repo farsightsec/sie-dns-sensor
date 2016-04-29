@@ -227,5 +227,5 @@ prepare_nmsgtool_environment() {
     export DNSQR_AUTH_ADDRS
 
     export NMSG_KICKER="/usr/lib/sie/sie-kicker $channel"
-    export ARGV_NMSGTOOL="$NMSG_USER -D -P $pid -i $interface -T dnsqr -z -t 60 -w $newdir/$channel/${outfile_prefix}"
+    export ARGV_NMSGTOOL="$NMSG_USER -D -P $pid -i $interface -T dnsqr --randomize -z -t 60 -w $newdir/$channel/${outfile_prefix}"
 }
