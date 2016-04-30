@@ -89,7 +89,7 @@ fi
 %{_libdir}/sie-dns-sensor/libnmsg.so.6.0.0
 %{_libdir}/sie-dns-sensor/nmsgtool
 %dir %{_libdir}/sie-dns-sensor/nmsg
-%{_libdir}/sie-dns-sensor/nmsg/nmsg_msg8_isc.so
+%{_libdir}/sie-dns-sensor/nmsg/nmsg_msg9_base.so
 %dir /usr/lib/sie/
 /usr/lib/sie/functions
 /usr/lib/sie/sie-kicker
