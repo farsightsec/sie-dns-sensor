@@ -1,3 +1,17 @@
+sie-dns-sensor (0.11.2-1)
+
+  * Update build dependency wdns from 0.6.0 to 0.9.0.
+
+  * Add build dependencies protobuf-c 1.2.1, protobuf 2.6.1.
+
+  * Drop "-V ISC" from ARGV_NMSGTOOL, no longer needed.
+
+  * Add "--randomize" to ARGV_NMSGTOOL.
+
+  * Remove the random sleep in the uploader.
+
+ -- Robert Edmonds <edmonds@fsi.io>  Fri, 29 Apr 2016 21:06:56 -0400
+
 sie-dns-sensor (0.7.3-1)
 
   * Update copyright and license statements as a result of the transition from
