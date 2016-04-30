@@ -98,14 +98,6 @@ makedir() {
     fi
 }
 
-random_sleep() {
-    if [ ! -z "$RANDOM" ]; then
-        sleep $(expr $RANDOM % $interval)
-    else
-        sleep $(expr $$ % $interval)
-    fi
-}
-
 do_archive() {
     channel="$1"
     shift
@@ -136,8 +128,6 @@ do_upload() {
 
     trap "rm -f $lockfile; exit" 0 1 2 3 4 5 6 15
     echo $$ > $lockfile
-
-    random_sleep
 
     while :; do
         files=$(find $waitdir/$channel -name "*.${filetype}" 2>/dev/null | head -n $maxper)
