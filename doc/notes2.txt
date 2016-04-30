@@ -1,0 +1,267 @@
+### install schroot, sbuild, rinse, debootstrap packages
+
+root@rd5:~# apt-get install sbuild schroot rinse debootstrap
+
+### move /var/lib/schroot onto the large (/srv) filesystem
+
+root@rd5:/var/lib# mkdir /srv/schroot
+root@rd5:/var/lib# mv schroot /srv/schroot/var
+root@rd5:/var/lib# ln -s /srv/schroot/var schroot
+
+### edit /etc/schroot/default/fstab and configure the /srv filesystem to be bindmounted into schroot sessions.
+
+root@rd5:~# grep /srv /etc/schroot/default/fstab 
+/srv        /srv        none    rw,bind     0   0
+
+### create debian 7 amd64 schroot tarball.
+
+root@rd5:~# sbuild-createchroot --arch=amd64 --make-sbuild-tarball=/srv/schroot/debian-7-amd64.tar.gz wheezy `mktemp -d` http://ftp.us.debian.org/debian
+[...]
+I: schroot chroot configuration written to /etc/schroot/chroot.d/wheezy-amd64-sbuild-6QK2jZ.
+   ┌────────────────────────────────────────────────────────────────────────
+   │[wheezy-amd64-sbuild]
+   │type=file
+   │description=Debian wheezy/amd64 autobuilder
+   │file=/srv/schroot/debian-7-amd64.tar.gz
+   │groups=root,sbuild
+   │root-groups=root,sbuild
+   └────────────────────────────────────────────────────────────────────────
+I: Please rename and modify this file as required.
+[...]
+
+### repeat, but for i386.
+
+root@rd5:~# sbuild-createchroot --arch=i386 --make-sbuild-tarball=/srv/schroot/debian-7-i386.tar.gz wheezy `mktemp -d` http://ftp.us.debian.org/debian
+[...]
+I: schroot chroot configuration written to /etc/schroot/chroot.d/wheezy-i386-sbuild-aOun3l.
+   ┌────────────────────────────────────────────────────────────────────────
+   │[wheezy-i386-sbuild]
+   │type=file
+   │description=Debian wheezy/i386 autobuilder
+   │file=/srv/schroot/debian-7-i386.tar.gz
+   │groups=root,sbuild
+   │root-groups=root,sbuild
+   │personality=linux32
+   └────────────────────────────────────────────────────────────────────────
+I: Please rename and modify this file as required.
+[...]
+
+### edited/renamed the chroot.d config files automatically generated in /etc/schroot/chroot.d. now the chroot.d config files look like this:
+
+root@rd5:/etc/schroot/chroot.d# mv wheezy-amd64-sbuild-6QK2jZ debian-7-amd64
+root@rd5:/etc/schroot/chroot.d# mv wheezy-i386-sbuild-aOun3l debian-7-i386
+root@rd5:/etc/schroot/chroot.d# vi *
+2 files to edit
+root@rd5:/etc/schroot/chroot.d# head -999 *
+==> debian-7-amd64 <==
+[debian-7-amd64]
+type=file
+description=Debian 7 wheezy/amd64 autobuilder
+file=/srv/schroot/debian-7-amd64.tar.gz
+groups=root,sbuild
+root-groups=root,sbuild
+
+==> debian-7-i386 <==
+[debian-7-i386]
+type=file
+description=Debian 7 wheezy/i386 autobuilder
+file=/srv/schroot/debian-7-i386.tar.gz
+groups=root,sbuild
+root-groups=root,sbuild
+personality=linux32
+root@rd5:/etc/schroot/chroot.d# 
+
+### make a backup copy of the schroot tarballs, just in case.
+
+root@rd5:/srv/schroot# mkdir .orig
+root@rd5:/srv/schroot# cp *tar.gz .orig/
+
+### "schroot -l" should list our new schroots:
+
+root@rd5:~# schroot -l
+chroot:debian-7-amd64
+chroot:debian-7-i386
+source:debian-7-amd64
+source:debian-7-i386
+root@rd5:~# 
+
+### which we can enter with the "schroot -c" command.
+
+### enter the debian source chroots and install the 'debhelper', 'pkg-config', 'zlib1g-dev', 'libpcap0.8-dev' packages.
+
+root@rd5:~# schroot -c source:debian-7-amd64
+(debian-7-amd64)root@rd5:~# apt-get --no-install-recommends install debhelper pkg-config zlib1g-dev libpcap0.8-dev
+[...]
+(debian-7-amd64)root@rd5:~# apt-get clean
+(debian-7-amd64)root@rd5:~# logout
+
+root@rd5:~# schroot -c source:debian-7-i386
+(debian-7-i386)root@rd5:~# apt-get --no-install-recommends install debhelper pkg-config zlib1g-dev libpcap0.8-dev
+[...]
+(debian-7-i386)root@rd5:~# apt-get clean
+(debian-7-i386)root@rd5:~# logout
+
+### we need a newer version of rinse that is available on wheezy, in order to support centos 7. but there is no backport, and the package from >= jessie have a nontrivial dependency chain, so we can't drop it in. take a new version but not a too new version from snapshot.debian.org (sigh):
+
+root@rd5:/tmp# wget http://snapshot.debian.org/archive/debian/20150225T160724Z/pool/main/r/rinse/rinse_3.0.7_all.deb
+[...]
+root@rd5:/tmp# dpkg -i rinse_3.0.7_all.deb 
+
+### now build the centos schroots. here we use the "rinse" command (debian package "rinse") to bootstrap the chroot directories. also note that the rinse command must be run under "linux32" when building i386 chroots on amd64 hosts.
+
+root@rd5:/srv/schroot# mkdir tmp
+root@rd5:/srv/schroot# cd tmp
+root@rd5:/srv/schroot/tmp# rinse --distribution centos-6 --arch amd64 --directory ./centos-6-amd64
+[...]
+root@rd5:/srv/schroot/tmp# rinse --distribution centos-7 --arch amd64 --directory ./centos-7-amd64
+[...]
+
+root@rd5:/srv/schroot/tmp# linux32 rinse --distribution centos-6 --arch i386 --directory ./centos-6-i386
+[...]
+
+### turn these centos directory trees into tarballs for schroot.
+
+root@rd5:/srv/schroot/tmp# cd centos-6-amd64/
+root@rd5:/srv/schroot/tmp/centos-6-amd64# tar -zcf ../../centos-6-amd64.tar.gz *
+root@rd5:/srv/schroot/tmp/centos-6-amd64# cd ..
+root@rd5:/srv/schroot/tmp# cd centos-6-i386/
+root@rd5:/srv/schroot/tmp/centos-6-i386# tar -zcf ../../centos-6-i386.tar.gz *
+root@rd5:/srv/schroot/tmp/centos-6-i386# cd ..
+root@rd5:/srv/schroot/tmp# cd centos-7-amd64/
+root@rd5:/srv/schroot/tmp/centos-7-amd64# tar -zcf ../../centos-7-amd64.tar.gz *
+
+### the directory trees in .../tmp can now be deleted.
+
+### create backup copies of the schroot tarballs, just in case.
+
+root@rd5:/srv/schroot# cp centos-*.tar.gz .orig/
+
+### create chroot.d config files for each of the centos schroot tarballs which look like this:
+
+root@rd5:/etc/schroot/chroot.d# head -999 centos-*
+==> centos-6-amd64 <==
+[centos-6-amd64]
+type=file
+description=CentOS 6 amd64
+file=/srv/schroot/centos-6-amd64.tar.gz
+groups=root
+root-groups=root
+
+==> centos-6-i386 <==
+[centos-6-i386]
+type=file
+description=CentOS 6 i386
+file=/srv/schroot/centos-6-i386.tar.gz
+groups=root
+root-groups=root
+personality=linux32
+
+==> centos-7-amd64 <==
+[centos-7-amd64]
+type=file
+description=CentOS 7 amd64
+file=/srv/schroot/centos-7-amd64.tar.gz
+groups=root
+root-groups=root
+
+### all of the debian and centos schroots should now be listed in the output of "schroot -l":
+
+root@rd5:~# schroot -l
+chroot:centos-6-amd64
+chroot:centos-6-i386
+chroot:centos-7-amd64
+chroot:debian-7-amd64
+chroot:debian-7-i386
+source:centos-6-amd64
+source:centos-6-i386
+source:centos-7-amd64
+source:debian-7-amd64
+source:debian-7-i386
+root@rd5:~# 
+
+### now we need to install the build environment in each centos schroot.  we need to run "schroot -c source:centos[..]" for each of centos-6-amd64, centos-6-i386, centos-7-amd64 and install our build dependencies.
+
+root@rd5:~# schroot -c source:centos-6-amd64
+-bash-4.1# yum groupinstall 'Development Tools'
+[...]
+-bash-4.1# yum install zlib-devel
+[...]
+-bash-4.1# yum install libpcap-devel
+[...]
+-bash-4.1# yum clean all            
+-bash-4.1# logout
+
+root@rd5:~# schroot -c source:centos-6-i386
+-bash-4.1# yum groupinstall 'Development Tools'
+[...]
+-bash-4.1# yum install zlib-devel
+[...]
+-bash-4.1# yum install libpcap-devel
+[...]
+-bash-4.1# yum clean all            
+-bash-4.1# logout
+
+root@rd5:~# schroot -c source:centos-7-amd64
+-bash-4.2# yum groupinstall 'Development Tools'
+[...]
+-bash-4.2# yum install zlib-devel              
+[...]
+-bash-4.2# yum install libpcap-devel
+[...]
+-bash-4.2# yum clean all
+[...]
+-bash-4.2# logout
+
+### clone the sie-dns-sensor repo.
+
+root@rd5:/srv/proj# git clone https://github.com/farsightsec/sie-dns-sensor.git
+
+### updating the build deps, must be done for each chroot
+
+root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# schroot -c debian-7-amd64
+
+## wdns
+
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# tar xf ../../tarballs/wdns-0.9.0.tar.gz 
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# cd wdns-0.9.0/
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/wdns-0.9.0# ./configure --prefix=/usr --disable-shared --with-pic && make && make install DESTDIR=`pwd`/../dest/
+[...]
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/wdns-0.9.0# cd ../dest
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/dest# strip --strip-unneeded usr/lib/libwdns.a
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/dest# rm usr/bin/wdns-*
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/dest# cd ..
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# rm -rf wdns-0.9.0/
+
+## protobuf
+
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# tar xf ../../tarballs/protobuf-2.6.1.tar.gz 
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# cd protobuf-2.6.1/
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-2.6.1# ./configure --prefix=/usr --disable-shared --with-pic && make -j8 && make install DESTDIR=`pwd`/../dest/
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-2.6.1# cd ..
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# rm -rf protobuf-2.6.1/
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# rm dest/usr/lib/libproto*.la
+
+## protobuf-c
+
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# tar xf ../../tarballs/protobuf-c-1.2.1.tar.gz 
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# cd protobuf-c-1.2.1/
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-c-1.2.1# ./configure --prefix=/usr protobuf_CFLAGS="-I`pwd`/../dest/usr/include" protobuf_LIBS="-L`pwd`/../dest/usr/lib -lprotoc -lprotobuf" PROTOC="`pwd`/../dest/usr/bin/protoc" --disable-shared --with-pic
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-c-1.2.1# make
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-c-1.2.1# make install DESTDIR=`pwd`/../dest/
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-c-1.2.1# cd ..
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64# rm -rf protobuf-c-1.2.1/
+
+
+(XXX: static linking hack for protoc-c after 'make')
+
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-c-1.2.1# make V=1
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-c-1.2.1# /bin/bash ./libtool  --tag=CXX   --mode=link g++  -I/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-c-1.2.1/../dest/usr/include -g -O2   -o protoc-c/protoc-c protoc-c/protoc_c_protoc_c-c_bytes_field.o protoc-c/protoc_c_protoc_c-c_enum.o protoc-c/protoc_c_protoc_c-c_enum_field.o protoc-c/protoc_c_protoc_c-c_extension.o protoc-c/protoc_c_protoc_c-c_field.o protoc-c/protoc_c_protoc_c-c_file.o protoc-c/protoc_c_protoc_c-c_generator.o protoc-c/protoc_c_protoc_c-c_helpers.o protoc-c/protoc_c_protoc_c-c_message.o protoc-c/protoc_c_protoc_c-c_message_field.o protoc-c/protoc_c_protoc_c-c_primitive_field.o protoc-c/protoc_c_protoc_c-c_service.o protoc-c/protoc_c_protoc_c-c_string_field.o protoc-c/protoc_c_protoc_c-main.o -L/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/protobuf-c-1.2.1/../dest/usr/lib -lprotoc -lprotobuf 
+
+(-lprotoc must be before -lprotobuf)
+
+at this point we have a statically linked protoc-c and protobuf can be uninstalled
+
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/dest# strip --strip-unneeded usr/lib/libprotobuf-c.a 
+
+(debian-7-amd64)root@rd5:/srv/proj/sie-dns-sensor/build-deps/debian-7-amd64/dest# rm -rf ./usr/lib/libprotobuf.a ./usr/lib/libprotobuf-lite.a ./usr/lib/libprotoc.a ./usr/lib/pkgconfig/protobuf.pc ./usr/lib/pkgconfig/protobuf-lite.pc ./usr/include/google/ ./usr/bin/protoc
+
