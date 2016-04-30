@@ -9,4 +9,4 @@ usr/lib/sie/sie-trim-spool
 usr/lib/sie/functions
 usr/lib/sie-dns-sensor/*.so.*
 usr/lib/sie-dns-sensor/nmsgtool
-usr/lib/sie-dns-sensor/nmsg/nmsg_*.so
+usr/lib/sie-dns-sensor/nmsg/nmsg_msg*.so
