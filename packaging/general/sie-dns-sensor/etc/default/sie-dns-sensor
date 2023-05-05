@@ -7,6 +7,7 @@ maxper="16"
 
 channel="ch202"
 interface="eth0"
+# rsync_source="2001:db8::1" # optional
 DNSQR_RES_ADDRS="192.0.2.1, 2001:db8::1"
 
 syslog_priority="local5.info"

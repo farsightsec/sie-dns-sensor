@@ -47,7 +47,13 @@ fi
 
 ### internal settings
 
-ssh_cmd="ssh -p %p -i $uploadkey -o UserKnownHostsFile=$knownhosts -o StrictHostKeyChecking=yes"
+if [ -z "$rsync_source" ]; then
+    source_cmd=""
+else
+    source_cmd="-b $rsync_source"
+fi
+
+ssh_cmd="ssh $source_cmd -p %p -i $uploadkey -o UserKnownHostsFile=$knownhosts -o StrictHostKeyChecking=yes"
 rsync_args="--timeout=10 --remove-source-files"
 submitservice="_rsync._tcp."
 
